@@ -1,0 +1,18 @@
+{
+	"name": "mcsm.js",
+	"description": "統合版マインクラフトのサーバーをNode.jsで管理するためのライブラリ",
+	"version": "0.0.0",
+	"type": "module",
+	"main": "dist/index.js",
+	"scripts": {
+		"postinstall": "tsc"
+	},
+	"devDependencies": {
+		"tsx": "^4.23.12"
+	},
+	"dependencies": {
+		"@types/node": "^26.3.0",
+		"adm-zip": "^0.6.0",
+		"typescript": "^7.0.2"
+	}
+}
