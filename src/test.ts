@@ -1,5 +1,7 @@
 import path from "node:path";
+import fs from "fs";
 import { MCSManager } from "./manager.js";
+import { MCS } from "./server.js";
 
 const __dirname = import.meta.dirname;
 
@@ -9,28 +11,39 @@ const serverRoot = path.join(__dirname, "../mcs");
 
 
 const rootDir = path.join(__dirname, "../test_root");
+const customWorld = path.join(rootDir, "customWorld");
+fs.mkdirSync(customWorld, {recursive: true});
 // fs.mkdirSync(rootDir, { recursive: true });
 
 const version = "1.26.44.3";
 
 
-const start = 19130;
+const start = 19140;
 const allowPorts = new Array(10).fill(0).map((v, i) => start + i);
 
 const mcsm = new MCSManager(rootDir, allowPorts);
-const serv = mcsm.runServer(version, "testworld", {"allow-list": "false", "server-name": "custom server name"}, 19132, 19133);
-
-
-serv.then(mcs => {
-    mcs?.on("log", (log) => {
-        console.log(log.toString())
+mcsm.initWorkSpace(version, customWorld).then(work => {
+    if (!work) return;
+    new MCS(work, {
+        "allow-list": "false",
+        "level-name": "world",
+        "server-port": "19132",
+        "server-portv6": "19133"
     })
-    setTimeout(() => {
-        mcs?.restart()
-        // mcs?.kill()
-        // mcsm.runServer(version, "testworld", {"allow-list": "false", "server-name": "custom server name"}, 19132, 19133);
-    }, 1000*10);
 })
+// const serv = mcsm.runServer(version, "testworld", {"allow-list": "false", "server-name": "custom server name"}, 19140, 19141);
+
+
+// serv.then(mcs => {
+//     mcs?.on("log", (log) => {
+//         console.log(log.toString())
+//     })
+//     setTimeout(() => {
+//         mcs?.restart()
+//         // mcs?.kill()
+//         // mcsm.runServer(version, "testworld", {"allow-list": "false", "server-name": "custom server name"}, 19132, 19133);
+//     }, 1000*10);
+// })
 
 // const pm = new PackageManager(rootDir)
 // pm.

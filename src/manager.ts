@@ -68,7 +68,7 @@ export class MCSManager extends PackageManager {
     }
     
     
-    async runServer(version: string, world: string, customServerProperties: MCSProperties, portv4?: number | undefined, portv6?: number | undefined) {
+    async initWorkSpace(version: string, world: string) {
         const id = crypto.randomUUID();
         const work = path.join(this.#root_works, id);
         fs.mkdirSync(work, { recursive: true });
@@ -89,24 +89,26 @@ export class MCSManager extends PackageManager {
         });
 
 
-        const v4 = portv4 ? this.#ports.use(portv4) : this.#ports.use();
-        const v6 = portv6 ? this.#ports.use(portv6) : this.#ports.use();
-
         if (ok) {
             this.#initWorld(work, world);
             
-            const server = new MCS(work, {
-                ...customServerProperties,
-                "level-name": "world",
-                "server-port": v4.toString(),
-                "server-portv6": v6.toString()
-            });
-            server.on("exit", () => {
-                this.#ports.releasePorts(v4, v6);
-
-            });
-            return server
+            return work;
         }
+    }
+    
+    async runServer(version: string, world: string, customServerProperties: MCSProperties, portv4?: number | undefined, portv6?: number | undefined) {
+
+        const v4 = portv4 ? this.#ports.use(portv4) : this.#ports.use();
+        const v6 = portv6 ? this.#ports.use(portv6) : this.#ports.use();
+
+        const workSpace = await this.initWorkSpace(version, world)
+        if (workSpace) return new MCS(workSpace, {
+            ...customServerProperties,
+            "level-name": "world",
+            "server-port": v4.toString(),
+            "server-portv6": v6.toString()
+        });
+
 
     }
 }

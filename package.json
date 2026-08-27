@@ -5,7 +5,8 @@
 	"type": "module",
 	"main": "dist/index.js",
 	"scripts": {
-		"postinstall": "tsc"
+		"postinstall": "tsc",
+		"test": "tsx src/test.ts"
 	},
 	"devDependencies": {
 		"tsx": "^4.23.12"
