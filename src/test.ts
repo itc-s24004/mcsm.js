@@ -18,19 +18,29 @@ fs.mkdirSync(customWorld, {recursive: true});
 const version = "1.26.44.3";
 
 
-const start = 19140;
+const start = 19130;
 const allowPorts = new Array(10).fill(0).map((v, i) => start + i);
 
 const mcsm = new MCSManager(rootDir, allowPorts);
-mcsm.initWorkSpace(version, customWorld).then(work => {
-    if (!work) return;
-    new MCS(work, {
-        "allow-list": "false",
-        "level-name": "world",
-        "server-port": "19132",
-        "server-portv6": "19133"
-    })
-})
+// mcsm.initWorkSpace(version, customWorld).then(work => {
+//     if (!work) return;
+//     new MCS(work, {
+//         "allow-list": "false",
+//         "level-name": "world",
+//         "server-port": "19132",
+//         "server-portv6": "19133"
+//     })
+// })
+
+const mcs = await mcsm.runServer(version, customWorld, {"allow-list": "false"}, 19132, 19133, true);
+console.log(mcs)
+mcs?.on("log", (log) => {
+    process.stdout.write(log);
+});
+
+setInterval(() => {
+    mcs?.writeTerminal("stop\n")
+}, 1000*30);
 // const serv = mcsm.runServer(version, "testworld", {"allow-list": "false", "server-name": "custom server name"}, 19140, 19141);
 
 

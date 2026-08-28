@@ -1,7 +1,7 @@
 {
 	"name": "mcsm.js",
 	"description": "統合版マインクラフトのサーバーをNode.jsで管理するためのライブラリ",
-	"version": "0.0.1",
+	"version": "0.0.2",
 	"type": "module",
 	"main": "dist/index.js",
 	"scripts": {

@@ -57,7 +57,6 @@ export class PortManager {
         const target = this.#allowPorts.splice(index, 1);
         if (target.length === 0) throw new PortAlreadyUsedError(port);
         this.#usedPorts.push(...target);
-        console.log(this.#usedPorts)
         return port;
     }
 

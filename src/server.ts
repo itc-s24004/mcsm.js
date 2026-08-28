@@ -21,10 +21,13 @@ export class MCS extends EventEmitter<MCS_Events> {
     
     #root: string;
     #properties: MCSProperties
-    constructor(root: string, properties: MCSProperties) {
+    #isDaemon
+    constructor(root: string, properties: MCSProperties, isDaemon: boolean = false) {
         super();
 
         this.#root = root;
+
+        this.#isDaemon = isDaemon;
         
         const propertiesPath = path.join(root, "server.properties");
 
@@ -39,6 +42,7 @@ export class MCS extends EventEmitter<MCS_Events> {
     }
 
     #run() {
+        if (this.isAlive) return console.log("alive")
         this.#process = spawn("./bedrock_server", {cwd: this.#root});
 
         this.#process.stdout?.on("data", (data) => {
@@ -46,6 +50,10 @@ export class MCS extends EventEmitter<MCS_Events> {
         });
         
         this.#process.once("exit", () => {
+            if (this.#isDaemon) {
+                this.#run();
+                return;
+            }
             this.emit("exit");
             this.removeAllListeners();
         });
@@ -59,6 +67,7 @@ export class MCS extends EventEmitter<MCS_Events> {
     }
 
     kill() {
+        if (this.#isDaemon) this.#isDaemon = false;
         return this.#process?.kill("SIGINT")
     }
 
@@ -67,11 +76,13 @@ export class MCS extends EventEmitter<MCS_Events> {
         this.#process?.once("exit", () => {
             this.#run();
         });
+        const daemon = this.#isDaemon;
         this.kill();
+        this.#isDaemon = daemon;
     }
 
     get isAlive() {
-        return this.#process?.exitCode ?? null === null;
+        return this.#process?.exitCode === null;
     }
 
 
