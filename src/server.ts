@@ -15,14 +15,21 @@ type MCS_Events = {
 export type MCSProperties = Record<string, string>
 
 
+export type MCScriptSettings = Record<string, {
+    permissions?: Record<string, any>;
+    variables?: Record<string, any>;
+    secrets?: Record<string, any>
+}>
+
+
 export class MCS extends EventEmitter<MCS_Events> {
     #process: ChildProcess | undefined;
     
     
     #root: string;
-    #properties: MCSProperties
+    #properties: MCSProperties;
     #isDaemon
-    constructor(root: string, properties: MCSProperties, isDaemon: boolean = false) {
+    constructor(root: string, properties: MCSProperties, scriptSettings: MCScriptSettings, isDaemon: boolean = false) {
         super();
 
         this.#root = root;
@@ -37,6 +44,24 @@ export class MCS extends EventEmitter<MCS_Events> {
         this.#properties = {...defaultProperties, ...properties}
         const newPropertiesText = JsonPropertiesToText(this.#properties);
         fs.writeFileSync(propertiesPath, newPropertiesText);
+
+        Object.entries(scriptSettings).forEach(([dir, settings]) => {
+            const configPath = path.join(root, "config", dir);
+            fs.mkdirSync(configPath, { recursive: true });
+
+            const permissionsPath = path.join(configPath, "permissions.json");
+            const permissionsData = JSON.stringify(settings.permissions);
+            if (permissionsData) fs.writeFileSync(permissionsPath, permissionsData);
+
+            const variablesPath = path.join(configPath, "variables.json");
+            const variablesData = JSON.stringify(settings.variables);
+            if (variablesData) fs.writeFileSync(variablesPath, variablesData);
+
+            const secretsPath = path.join(configPath, "secrets.json");
+            const secretsData = JSON.stringify(settings.secrets);
+            if (secretsData) fs.writeFileSync(secretsPath, secretsData);
+        });
+
         
         this.#run();
     }

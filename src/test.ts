@@ -32,7 +32,18 @@ const mcsm = new MCSManager(rootDir, allowPorts);
 //     })
 // })
 
-const mcs = await mcsm.runServer(version, customWorld, {"allow-list": "false"}, 19132, 19133, true);
+const mcs = await mcsm.runServer(version, customWorld, {"allow-list": "false"}, {
+    "default": {
+        permissions: {
+            allowed_modules: [
+                "@minecraft/server",
+                "@minecraft/server-ui",
+                "@minecraft/server-admin",
+                "@minecraft/server-net",
+            ]
+        }
+    }
+}, 19132, 19133, true);
 console.log(mcs)
 mcs?.on("log", (log) => {
     process.stdout.write(log);

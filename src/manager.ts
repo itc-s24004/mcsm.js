@@ -1,7 +1,7 @@
 import path from "node:path";
 import fs from "node:fs";
 import { PackageManager } from "./package.js";
-import { MCS, type MCSProperties } from "./server.js";
+import { MCS, type MCScriptSettings, type MCSProperties } from "./server.js";
 import { PortManager } from "./port.js";
 
 
@@ -96,7 +96,7 @@ export class MCSManager extends PackageManager {
         }
     }
     
-    async runServer(version: string, world: string, customServerProperties: MCSProperties, portv4?: number | undefined, portv6?: number | undefined, daemon?: boolean) {
+    async runServer(version: string, world: string, customServerProperties: MCSProperties, scriptSettings: MCScriptSettings = {}, portv4?: number | undefined, portv6?: number | undefined, daemon?: boolean) {
 
         const v4 = portv4 ? this.#ports.use(portv4) : this.#ports.use();
         const v6 = portv6 ? this.#ports.use(portv6) : this.#ports.use();
@@ -107,7 +107,7 @@ export class MCSManager extends PackageManager {
             "level-name": "world",
             "server-port": v4.toString(),
             "server-portv6": v6.toString()
-        }, daemon);
+        }, scriptSettings, daemon);
 
 
     }
