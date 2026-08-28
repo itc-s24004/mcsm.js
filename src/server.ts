@@ -68,7 +68,7 @@ export class MCS extends EventEmitter<MCS_Events> {
 
     kill() {
         if (this.#isDaemon) this.#isDaemon = false;
-        return this.#process?.kill("SIGINT")
+        return this.#process?.kill("SIGKILL")
     }
 
     restart() {
@@ -82,7 +82,7 @@ export class MCS extends EventEmitter<MCS_Events> {
     }
 
     get isAlive() {
-        return this.#process?.exitCode === null;
+        return this.#process?.exitCode === null && this.#process.signalCode === null;
     }
 
 

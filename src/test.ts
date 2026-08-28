@@ -39,7 +39,8 @@ mcs?.on("log", (log) => {
 });
 
 setInterval(() => {
-    mcs?.writeTerminal("stop\n")
+    // mcs?.writeTerminal("stop\n")
+    mcs?.restart()
 }, 1000*30);
 // const serv = mcsm.runServer(version, "testworld", {"allow-list": "false", "server-name": "custom server name"}, 19140, 19141);
 
