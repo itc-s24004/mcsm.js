@@ -22,7 +22,12 @@ export type MCScriptSettings = Record<string, {
 }>
 
 
-export class MCS extends EventEmitter<MCS_Events> {
+
+export type MCS_Meta = Record<string, any>;
+
+
+
+export class MCS<meta extends MCS_Meta> extends EventEmitter<MCS_Events> {
     static #id_index = 0;
     
     
@@ -37,12 +42,22 @@ export class MCS extends EventEmitter<MCS_Events> {
     #root: string;
     #properties: MCSProperties;
     #isDaemon
-    constructor(root: string, properties: MCSProperties, scriptSettings: MCScriptSettings, isDaemon: boolean = false) {
+
+
+    #meta: meta;
+    getMeta<key extends keyof meta>(key: key) {
+        return this.#meta[key]
+    }
+
+
+    constructor(root: string, properties: MCSProperties, scriptSettings: MCScriptSettings, isDaemon: boolean = false, meta: meta) {
         super();
 
         this.#root = root;
 
         this.#isDaemon = isDaemon;
+
+        this.#meta = meta;
         
         const propertiesPath = path.join(root, "server.properties");
 

@@ -1,12 +1,20 @@
 import path from "node:path";
 import fs from "node:fs";
 import { PackageManager } from "./package.js";
-import { MCS, type MCScriptSettings, type MCSProperties } from "./server.js";
+import { MCS, type MCS_Meta, type MCScriptSettings, type MCSProperties } from "./server.js";
 import { PortManager } from "./port.js";
 
 
 
-export class MCSManager extends PackageManager {
+
+type MCSM_Meta = {
+    version: string;
+    world: string;
+}
+
+
+
+export class MCSManager<customMeta extends MCS_Meta> extends PackageManager {
     #ports: PortManager
     
     #root_worlds: string;
@@ -97,24 +105,28 @@ export class MCSManager extends PackageManager {
     }
 
 
-    #servers: MCS[] = [];
+    #servers: MCS<MCSM_Meta & customMeta>[] = [];
     get allServers() {
         return [...this.#servers];
     }
     
-    async runServer(version: string, world: string, customServerProperties: MCSProperties, scriptSettings: MCScriptSettings = {}, portv4?: number | undefined, portv6?: number | undefined, daemon?: boolean) {
+    async runServer(version: string, world: string, customServerProperties: MCSProperties, scriptSettings: MCScriptSettings = {}, meta: customMeta, portv4?: number | undefined, portv6?: number | undefined, daemon?: boolean) {
 
         const v4 = portv4 ? this.#ports.use(portv4) : this.#ports.use();
         const v6 = portv6 ? this.#ports.use(portv6) : this.#ports.use();
 
         const workSpace = await this.initWorkSpace(version, world)
         if (workSpace) {
-            const server = new MCS(workSpace, {
+            const server = new MCS<MCSM_Meta & customMeta>(workSpace, {
                 ...customServerProperties,
                 "level-name": "world",
                 "server-port": v4.toString(),
                 "server-portv6": v6.toString()
-            }, scriptSettings, daemon);
+            }, scriptSettings, daemon, {
+                ...meta,
+                version,
+                world
+            });
             
             this.#servers.push(server);
 

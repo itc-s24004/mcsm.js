@@ -19,7 +19,13 @@ const version = "1.26.44.3";
 const start = 19130;
 const allowPorts = new Array(10).fill(0).map((v, i) => start + i);
 
-const mcsm = new MCSManager(rootDir, allowPorts);
+
+
+type CMETA = {
+    isLoby: boolean;
+}
+
+const mcsm = new MCSManager<CMETA>(rootDir, allowPorts);
 // mcsm.initWorkSpace(version, customWorld).then(work => {
 //     if (!work) return;
 //     new MCS(work, {
@@ -41,17 +47,17 @@ const mcs = await mcsm.runServer(version, customWorld, {"allow-list": "false"}, 
             ]
         }
     }
-}, 19132, 19133, true);
+}, {isLoby: true}, 19132, 19133, true);
 
 mcs?.on("log", (log) => {
     process.stdout.write(log);
 });
 
-const mcs2 = await mcsm.runServer(version, "test2", {});
-const mcs3 = await mcsm.runServer(version, "test3", {});
-console.log(mcs?.id);
-console.log(mcs2?.id);
-console.log(mcs3?.id)
+const mcs2 = await mcsm.runServer(version, "test2", {}, {}, {isLoby: false});
+const mcs3 = await mcsm.runServer(version, "test3", {}, {}, {isLoby: false});
+console.log(mcs?.id, mcs?.getMeta("isLoby"));
+console.log(mcs2?.id, mcs2?.getMeta("isLoby"));
+console.log(mcs3?.id, mcs3?.getMeta("isLoby"))
 // const serv = mcsm.runServer(version, "testworld", {"allow-list": "false", "server-name": "custom server name"}, 19140, 19141);
 
 
