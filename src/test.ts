@@ -1,12 +1,10 @@
 import path from "node:path";
 import fs from "fs";
 import { MCSManager } from "./manager.js";
-import { MCS } from "./server.js";
 
 const __dirname = import.meta.dirname;
 
 
-const serverRoot = path.join(__dirname, "../mcs");
 
 
 
@@ -44,15 +42,16 @@ const mcs = await mcsm.runServer(version, customWorld, {"allow-list": "false"}, 
         }
     }
 }, 19132, 19133, true);
-console.log(mcs)
+
 mcs?.on("log", (log) => {
     process.stdout.write(log);
 });
 
-setInterval(() => {
-    // mcs?.writeTerminal("stop\n")
-    mcs?.restart()
-}, 1000*30);
+const mcs2 = await mcsm.runServer(version, "test2", {});
+const mcs3 = await mcsm.runServer(version, "test3", {});
+console.log(mcs?.id);
+console.log(mcs2?.id);
+console.log(mcs3?.id)
 // const serv = mcsm.runServer(version, "testworld", {"allow-list": "false", "server-name": "custom server name"}, 19140, 19141);
 
 

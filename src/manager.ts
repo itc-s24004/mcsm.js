@@ -95,6 +95,12 @@ export class MCSManager extends PackageManager {
             return work;
         }
     }
+
+
+    #servers: MCS[] = [];
+    get allServers() {
+        return [...this.#servers];
+    }
     
     async runServer(version: string, world: string, customServerProperties: MCSProperties, scriptSettings: MCScriptSettings = {}, portv4?: number | undefined, portv6?: number | undefined, daemon?: boolean) {
 
@@ -102,13 +108,23 @@ export class MCSManager extends PackageManager {
         const v6 = portv6 ? this.#ports.use(portv6) : this.#ports.use();
 
         const workSpace = await this.initWorkSpace(version, world)
-        if (workSpace) return new MCS(workSpace, {
-            ...customServerProperties,
-            "level-name": "world",
-            "server-port": v4.toString(),
-            "server-portv6": v6.toString()
-        }, scriptSettings, daemon);
+        if (workSpace) {
+            const server = new MCS(workSpace, {
+                ...customServerProperties,
+                "level-name": "world",
+                "server-port": v4.toString(),
+                "server-portv6": v6.toString()
+            }, scriptSettings, daemon);
+            
+            this.#servers.push(server);
 
+            server.once("exit", () => {
+                const index = this.#servers.indexOf(server);
+                if (index !== -1) this.#servers.splice(index, 1);
+            });
+            
+            return server;
+        }
 
     }
 }

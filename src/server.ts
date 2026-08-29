@@ -23,6 +23,14 @@ export type MCScriptSettings = Record<string, {
 
 
 export class MCS extends EventEmitter<MCS_Events> {
+    static #id_index = 0;
+    
+    
+    #id = MCS.#id_index++;
+    get id() {
+        return this.#id
+    }
+    
     #process: ChildProcess | undefined;
     
     
