@@ -66,8 +66,9 @@ export class PortManager {
     }
 
     release(port: number) {
-        const target = this.#usedPorts.splice(this.#usedPorts.indexOf(port), 1);
-        if (target.length === 0) throw new PortAlreadyReleasedError(port);
+        const index = this.#usedPorts.indexOf(port);
+        if (index === -1) throw new PortAlreadyReleasedError(port);
+        this.#usedPorts.splice(index, 1);
     }
 
     releasePorts(...ports: number[]) {
