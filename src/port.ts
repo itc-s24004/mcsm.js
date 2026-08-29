@@ -47,11 +47,16 @@ export class PortManager {
         this.#usedPorts.push(...targetPorts);
         return targetPorts;
     }
+
+    get #nextPort() {
+        const port = this.#allowPorts[0];
+        if (port === undefined) throw new InsufficientPortsError();
+        return port;
+    }
     
 
 
-    use(port?: number | undefined): number {
-        if (port === undefined) port = this.usePorts(1)[0]!;
+    use(port: number = this.#nextPort): number {
         const index = this.#allowPorts.indexOf(port);
         if (index === -1) throw new PortAlreadyUsedError(port);
         const target = this.#allowPorts.splice(index, 1);
